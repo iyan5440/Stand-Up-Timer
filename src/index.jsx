@@ -1,9 +1,10 @@
 import React from "react";
 import { render } from "react-dom";
+import sfx from "./alarmsfx.mp3";
 import "./index.css";
 
 function Index() {
-    const defaultTime = "00:00:10";
+    const defaultTime = "00:00:03";
     let countDate = (defaultTime.substring(0,2) * 3600000) + (defaultTime.substring(3,5) * 60000) + (defaultTime.substring(6,8) * 1000); //new Date(defaultTime).getTime();
     let isOnClick = false;
     let timetext;
@@ -29,6 +30,8 @@ function Index() {
         
 
         if(isOnClick) {// while loop
+            timerButton = document.getElementById("timer");
+            timerButton.innerHTML = defaultTime;
             let tmpCountDate = countDate;
             breakOrStudyButton = document.getElementById("BreakOrStudy");
             breakOrStudyButton.innerHTML = isOnClick ? "Study Time" : "Break Time";
@@ -39,7 +42,7 @@ function Index() {
                     hrs = (Math.floor((tmpCountDate) / (1000 * 60 * 60))).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
                     mins = (Math.floor((tmpCountDate % (1000 * 60 * 60)) / (1000 * 60))).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
                     secs = (Math.floor((tmpCountDate % (1000 * 60)) / 1000)).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
-                    timerButton = document.getElementById("timer");
+                    
                     //console.log(hrs+":"+mins+":"+secs);
                     timerButton.innerHTML = hrs+":"+mins+":"+secs;
     
@@ -47,6 +50,7 @@ function Index() {
                         clearInterval(timetext);
                         isOnClick = false;
                         breakOrStudyButton.innerHTML = breakOrStudy;
+                        new Audio(sfx).play();
                     }
                 }
                 
