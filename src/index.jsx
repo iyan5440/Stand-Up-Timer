@@ -10,8 +10,7 @@ function Index() {
     let countBreakDate = (defaultTime.substring(0,2) * 3600000) + (defaultTime.substring(3,5) * 60000) + (defaultTime.substring(6,8) * 1000); //new Date(defaultTime).getTime();
     let isOnClick = false;
     let isOnBreakClick = false;
-    let isLoop = false;
-    let timetext;
+    var timetext;
     let timerButton;
     let breakOrStudy = isOnClick ? "Study Time" : "Break Time";
     let breakOrStudyButton;
@@ -21,9 +20,9 @@ function Index() {
             isOnClick = true;
             event.currentTarget.disabled = true;
             
-            updateStudy();
-            
+            updateStudy();   
         }
+
         event.currentTarget.disabled = false;
     };
 
@@ -43,7 +42,6 @@ function Index() {
             timetext = setInterval(function () {
                 if(isOnClick){
                     tmpCountDate-=1000;
-                    //console.log(""+tmpCountDate);
                     hrs = (Math.floor((tmpCountDate) / (1000 * 60 * 60))).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
                     mins = (Math.floor((tmpCountDate % (1000 * 60 * 60)) / (1000 * 60))).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
                     secs = (Math.floor((tmpCountDate % (1000 * 60)) / 1000)).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
@@ -59,6 +57,7 @@ function Index() {
                     if(tmpCountDate == -1000){
                         clearInterval(timetext);
                         isOnClick = false;
+                        tmpCountDate = countDate;
                         updateBreak();
                     }
                 }
@@ -85,12 +84,10 @@ function Index() {
             timetext = setInterval(function () {
                 if(isOnBreakClick){
                     tmpCountDate-=1000;
-                    //console.log(""+tmpCountDate);
                     hrs = (Math.floor((tmpCountDate) / (1000 * 60 * 60))).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
                     mins = (Math.floor((tmpCountDate % (1000 * 60 * 60)) / (1000 * 60))).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
                     secs = (Math.floor((tmpCountDate % (1000 * 60)) / 1000)).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
                     
-                    //console.log(hrs+":"+mins+":"+secs);
                     timerButton.innerHTML = hrs+":"+mins+":"+secs;
     
                     if(tmpCountDate == 0){ 
@@ -110,20 +107,12 @@ function Index() {
     const handleClearClick  = event => {
         if(isOnClick == true) {
             isOnClick = false;
-            //handleStartClick.event.currentTarget.disabled = false;
             breakOrStudyButton.innerHTML = breakOrStudy;
         }
         clearInterval(timetext);
         timerButton.innerHTML = defaultTime;
         breakOrStudyButton.innerHTML = breakOrStudy;
     };
-
-    const handleLoopClick  = event => {
-        //toggles loop boolean
-        //if loop is on then it forces handleStart Click to continue
-        isLoop = (isLoop == false) ? true : false;
-    };
-
 
     return (
         <div>
@@ -143,7 +132,6 @@ function Index() {
                 <button className="button-items" onClick={handleClearClick}>Clear</button>
             </div>
 
-            <button className="settings-button">O</button>
         </div>
     );
 }
