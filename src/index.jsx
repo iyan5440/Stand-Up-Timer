@@ -16,14 +16,18 @@ function Index() {
     let breakOrStudyButton;
     
     const handleStartClick  = event => {
-        if(isOnClick == false) {
-            isOnClick = true;
-            event.currentTarget.disabled = true;
-            
-            updateStudy();   
+        if(isOnClick || isOnBreakClick) return;
+        else{
+            if(isOnClick == false) {
+                isOnClick = true;
+                //event.currentTarget.disabled = true;
+                
+                updateStudy();   
+            }
         }
+        
 
-        event.currentTarget.disabled = false;
+        //event.currentTarget.disabled = false;
     };
 
     function updateStudy(){
@@ -50,7 +54,7 @@ function Index() {
                     timerButton.innerHTML = hrs+":"+mins+":"+secs;
     
                     if(tmpCountDate == 0){ 
-                        breakOrStudyButton.innerHTML = breakOrStudy;
+                        breakOrStudyButton.innerHTML = "Break Time";
                         new Audio(sfx).play();
                     }
 
@@ -91,11 +95,21 @@ function Index() {
                     timerButton.innerHTML = hrs+":"+mins+":"+secs;
     
                     if(tmpCountDate == 0){ 
-                        clearInterval(timetext);
-                        isOnBreakClick = false;
-                        breakOrStudyButton.innerHTML = breakOrStudy;
+                        //clearInterval(timetext);
+                        //isOnBreakClick = false;
+                        breakOrStudyButton.innerHTML = "Study Time";
                         new Audio(sfx).play();
+                        
                     }
+
+                    if(tmpCountDate == -1000){
+                        clearInterval(timetext);
+                        if(isOnBreakClick == true){
+                            isOnBreakClick = false;
+                            updateStudy();
+                        }
+                    }
+
                 }
                 
             },1000);
@@ -105,10 +119,12 @@ function Index() {
     }
 
     const handleClearClick  = event => {
-        if(isOnClick == true) {
+        /*if(isOnClick == true) {
             isOnClick = false;
             breakOrStudyButton.innerHTML = breakOrStudy;
-        }
+        }*/
+        isOnClick = false;
+        isOnBreakClick = false;
         clearInterval(timetext);
         timerButton.innerHTML = defaultTime;
         breakOrStudyButton.innerHTML = breakOrStudy;
