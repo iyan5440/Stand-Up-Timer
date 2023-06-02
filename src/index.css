@@ -42,3 +42,7 @@ h1{
     position: relative;
     left: 90%;
 }
+
+.loop-button{
+    left: 100px;
+}

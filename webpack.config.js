@@ -3,7 +3,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-  entry: './src/index.jsx',
+  entry: {
+    content: './src/index.jsx',
+    background: './src/background/background.js'
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',

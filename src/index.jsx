@@ -10,6 +10,7 @@ function Index() {
     let countBreakDate = (defaultTime.substring(0,2) * 3600000) + (defaultTime.substring(3,5) * 60000) + (defaultTime.substring(6,8) * 1000); //new Date(defaultTime).getTime();
     let isOnClick = false;
     let isOnBreakClick = false;
+    let isLoop = false;
     var timetext;
     let timerButton;
     let breakOrStudy = isOnClick ? "Study Time" : "Break Time";
@@ -102,11 +103,14 @@ function Index() {
                         
                     }
 
-                    if(tmpCountDate == -1000){
+                    if(tmpCountDate == 0){
                         clearInterval(timetext);
                         if(isOnBreakClick == true){
                             isOnBreakClick = false;
-                            updateStudy();
+                            if(isLoop){
+                                setTimeout(function() {updateStudy()}, 1000);
+                                
+                            }
                         }
                     }
 
@@ -116,6 +120,11 @@ function Index() {
             
         }
 
+    }
+
+    const handleLoopClick = event =>{
+        isLoop = !isLoop;
+        console.log(isLoop);
     }
 
     const handleClearClick  = event => {
@@ -132,7 +141,8 @@ function Index() {
 
     return (
         <div>
-            <button className="settings-button">O</button>
+            <button className="settings-button">S</button>
+            
 
             <div className="flex column ">
                 <h3 id="BreakOrStudy">{breakOrStudy}</h3>
@@ -142,11 +152,15 @@ function Index() {
             </div>
 
             <div className="button-container flex">
+                
                 <button className="button-items" onClick={handleStartClick}>
                     Start
                 </button>
                 <button className="button-items" onClick={handleClearClick}>Clear</button>
+                
             </div>
+
+            <button className="settings-button" onClick={handleLoopClick}>O</button>
 
         </div>
     );

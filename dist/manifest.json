@@ -3,6 +3,10 @@
     "name": "Stand Up Timer",
     "description": "TBD",
     "version": "1.0",
+    "background": {
+      "service_worker": "background.js",
+      "type": "module"
+    },
     "action": {
       "default_popup": "index.html"
     }
