@@ -3,6 +3,9 @@ import { render } from "react-dom";
 import sfx from "./alarmsfx.mp3";
 import "./index.css";
 
+
+let timerElement;
+
 function Index() {
     /*
     const defaultTime = "00:00:03";
@@ -15,24 +18,20 @@ function Index() {
     //const defaultBreakTime = "00:00:03";
     let countBreakDate;
 
-
-    chrome.runtime.sendMessage({event: 'default'}, (response) => {
-            console.log("worked out");
-            countDate = response;
-            countBreakDate = response;
-            console.log("worked out");
-    }); //new Date(defaultTime).getTime();
-
-    
-
     
     let isOnClick = false;
     let isOnBreakClick = false;
     let isLoop = false;
     var timetext;
-    let timerButton;
+    //const timerElement = document.getElementById("timer");
+    document.addEventListener("DOMContentLoaded", function () {
+        timerElement = document.getElementById("timer");
+    });
+    
     let breakOrStudy = isOnClick ? "Study Time" : "Break Time";
     let breakOrStudyButton;
+
+    
 
     const formatTime = (milliseconds) => {
         const hrs = String(Math.floor((milliseconds / (1000 * 60 * 60)) % 24)).padStart(2, '0');
@@ -40,6 +39,14 @@ function Index() {
         const secs = String(Math.floor((milliseconds / 1000) % 60)).padStart(2, '0');
         return `${hrs}:${mins}:${secs}`;
     };
+
+    chrome.runtime.sendMessage({event: 'default'}, (response) => {
+        console.log("worked out", response);
+        countDate = response;
+        countBreakDate = response;
+        timerElement.innerHTML = formatTime(countDate); //formatTimer(time)
+        console.log("worked out");
+    }); //new Date(defaultTime).getTime();
 
     const defaultTime = "00:00:03";//formatTime(countDate);//"00:00:03";
     
@@ -69,15 +76,14 @@ function Index() {
         
 
         if(isOnClick) {// while loop
-            timerButton = document.getElementById("timer");
-            timerButton.innerHTML = formatTime(countDate); //formatTimer(time)
+            timerElement.innerHTML = formatTime(countDate); //formatTimer(time)
             let tmpCountDate = countDate;
             breakOrStudyButton = document.getElementById("BreakOrStudy");
             breakOrStudyButton.innerHTML = "Study Time";
             timetext = setInterval(function () {
                 if(isOnClick){
                     tmpCountDate-=1000;
-                    timerButton.innerHTML = formatTime(tmpCountDate);//hrs+":"+mins+":"+secs; //formatTimer(time)
+                    timerElement.innerHTML = formatTime(tmpCountDate);//hrs+":"+mins+":"+secs; //formatTimer(time)
     
                     if(tmpCountDate == 0){ 
                         breakOrStudyButton.innerHTML = "Break Time";
@@ -106,15 +112,14 @@ function Index() {
         
 
         if(isOnBreakClick) {// while loop
-            timerButton = document.getElementById("timer");
-            timerButton.innerHTML = formatTime(countBreakDate);
+            timerElement.innerHTML = formatTime(countBreakDate);
             let tmpCountDate = countBreakDate;
             breakOrStudyButton = document.getElementById("BreakOrStudy");
             breakOrStudyButton.innerHTML = "Break Time";
             timetext = setInterval(function () {
                 if(isOnBreakClick){
                     tmpCountDate-=1000;
-                    timerButton.innerHTML = formatTime(tmpCountDate)//hrs+":"+mins+":"+secs;
+                    timerElement.innerHTML = formatTime(tmpCountDate)//hrs+":"+mins+":"+secs;
     
                     if(tmpCountDate == 0){ 
                         //clearInterval(timetext);
@@ -156,7 +161,7 @@ function Index() {
         isOnClick = false;
         isOnBreakClick = false;
         clearInterval(timetext);
-        timerButton.innerHTML = formatTime(countDate);
+        timerElement.innerHTML = formatTime(countDate);
         breakOrStudyButton.innerHTML = breakOrStudy;
     };
 
@@ -167,7 +172,7 @@ function Index() {
 
             <div className="flex column ">
                 <h3 id="BreakOrStudy">{breakOrStudy}</h3>
-                <h1 id="timer">{defaultTime}</h1>
+                <h1 id="timer">{"Yeah"}</h1>
                 
                 
             </div>
