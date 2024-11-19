@@ -10,17 +10,20 @@ function Index() {
     const defaultBreakTime = "00:00:03";
     let countBreakDate = (defaultTime.substring(0,2) * 3600000) + (defaultTime.substring(3,5) * 60000) + (defaultTime.substring(6,8) * 1000); //new Date(defaultTime).getTime();
     */
-    const defaultTime = "00:00:03";
+    
     let countDate; //new Date(defaultTime).getTime();
     //const defaultBreakTime = "00:00:03";
     let countBreakDate;
 
 
     chrome.runtime.sendMessage({event: 'default'}, (response) => {
+            console.log("worked out");
             countDate = response;
             countBreakDate = response;
             console.log("worked out");
     }); //new Date(defaultTime).getTime();
+
+    
 
     
     let isOnClick = false;
@@ -31,6 +34,14 @@ function Index() {
     let breakOrStudy = isOnClick ? "Study Time" : "Break Time";
     let breakOrStudyButton;
 
+    const formatTime = (milliseconds) => {
+        const hrs = String(Math.floor((milliseconds / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+        const mins = String(Math.floor((milliseconds / (1000 * 60)) % 60)).padStart(2, '0');
+        const secs = String(Math.floor((milliseconds / 1000) % 60)).padStart(2, '0');
+        return `${hrs}:${mins}:${secs}`;
+    };
+
+    const defaultTime = "00:00:03";//formatTime(countDate);//"00:00:03";
     
     const handleStartClick  = event => {
         chrome.runtime.sendMessage({event: 'start'});
@@ -51,7 +62,7 @@ function Index() {
     };
 
     function updateStudy(){
-        let hrs, mins, secs;
+        //let hrs, mins, secs;
         if(isOnClick == false) {
             isOnClick = true;
         }
@@ -59,19 +70,14 @@ function Index() {
 
         if(isOnClick) {// while loop
             timerButton = document.getElementById("timer");
-            timerButton.innerHTML = defaultTime;
+            timerButton.innerHTML = formatTime(countDate); //formatTimer(time)
             let tmpCountDate = countDate;
             breakOrStudyButton = document.getElementById("BreakOrStudy");
             breakOrStudyButton.innerHTML = "Study Time";
             timetext = setInterval(function () {
                 if(isOnClick){
                     tmpCountDate-=1000;
-                    hrs = (Math.floor((tmpCountDate) / (1000 * 60 * 60))).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
-                    mins = (Math.floor((tmpCountDate % (1000 * 60 * 60)) / (1000 * 60))).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
-                    secs = (Math.floor((tmpCountDate % (1000 * 60)) / 1000)).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
-                    
-                    //console.log(hrs+":"+mins+":"+secs);
-                    timerButton.innerHTML = hrs+":"+mins+":"+secs;
+                    timerButton.innerHTML = formatTime(tmpCountDate);//hrs+":"+mins+":"+secs; //formatTimer(time)
     
                     if(tmpCountDate == 0){ 
                         breakOrStudyButton.innerHTML = "Break Time";
@@ -93,7 +99,7 @@ function Index() {
     }
 
     function updateBreak(){
-        let hrs, mins, secs;
+        //let hrs, mins, secs;
         if(isOnBreakClick == false) {
             isOnBreakClick = true;
         }
@@ -101,18 +107,14 @@ function Index() {
 
         if(isOnBreakClick) {// while loop
             timerButton = document.getElementById("timer");
-            timerButton.innerHTML = defaultTime;
+            timerButton.innerHTML = formatTime(countBreakDate);
             let tmpCountDate = countBreakDate;
             breakOrStudyButton = document.getElementById("BreakOrStudy");
             breakOrStudyButton.innerHTML = "Break Time";
             timetext = setInterval(function () {
                 if(isOnBreakClick){
                     tmpCountDate-=1000;
-                    hrs = (Math.floor((tmpCountDate) / (1000 * 60 * 60))).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
-                    mins = (Math.floor((tmpCountDate % (1000 * 60 * 60)) / (1000 * 60))).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
-                    secs = (Math.floor((tmpCountDate % (1000 * 60)) / 1000)).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
-                    
-                    timerButton.innerHTML = hrs+":"+mins+":"+secs;
+                    timerButton.innerHTML = formatTime(tmpCountDate)//hrs+":"+mins+":"+secs;
     
                     if(tmpCountDate == 0){ 
                         //clearInterval(timetext);
@@ -154,7 +156,7 @@ function Index() {
         isOnClick = false;
         isOnBreakClick = false;
         clearInterval(timetext);
-        timerButton.innerHTML = defaultTime;
+        timerButton.innerHTML = formatTime(countDate);
         breakOrStudyButton.innerHTML = breakOrStudy;
     };
 
