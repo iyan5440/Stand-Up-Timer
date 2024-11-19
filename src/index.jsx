@@ -1,13 +1,28 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { render } from "react-dom";
 import sfx from "./alarmsfx.mp3";
 import "./index.css";
 
 function Index() {
+    /*
     const defaultTime = "00:00:03";
     let countDate = (defaultTime.substring(0,2) * 3600000) + (defaultTime.substring(3,5) * 60000) + (defaultTime.substring(6,8) * 1000); //new Date(defaultTime).getTime();
     const defaultBreakTime = "00:00:03";
     let countBreakDate = (defaultTime.substring(0,2) * 3600000) + (defaultTime.substring(3,5) * 60000) + (defaultTime.substring(6,8) * 1000); //new Date(defaultTime).getTime();
+    */
+    const defaultTime = "00:00:03";
+    let countDate; //new Date(defaultTime).getTime();
+    //const defaultBreakTime = "00:00:03";
+    let countBreakDate;
+
+
+    chrome.runtime.sendMessage({event: 'default'}, (response) => {
+            countDate = response;
+            countBreakDate = response;
+            console.log("worked out");
+    }); //new Date(defaultTime).getTime();
+
+    
     let isOnClick = false;
     let isOnBreakClick = false;
     let isLoop = false;
@@ -15,8 +30,12 @@ function Index() {
     let timerButton;
     let breakOrStudy = isOnClick ? "Study Time" : "Break Time";
     let breakOrStudyButton;
+
     
     const handleStartClick  = event => {
+        chrome.runtime.sendMessage({event: 'start'});
+
+
         if(isOnClick || isOnBreakClick) return;
         else{
             if(isOnClick == false) {
