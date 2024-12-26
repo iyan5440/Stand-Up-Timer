@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import { render } from "react-dom";
-import sfx from "./alarmsfx.mp3";
+//import sfx from "./alarmsfx.mp3";
 import "./index.css";
 
 
@@ -13,7 +13,10 @@ function Index() {
     const defaultBreakTime = "00:00:03";
     let countBreakDate = (defaultTime.substring(0,2) * 3600000) + (defaultTime.substring(3,5) * 60000) + (defaultTime.substring(6,8) * 1000); //new Date(defaultTime).getTime();
     */
-    
+    document.addEventListener("DOMContentLoaded", function () {
+        timerElement = document.getElementById("timer");
+    });
+    /*
     let countDate; //new Date(defaultTime).getTime();
     //const defaultBreakTime = "00:00:03";
     let countBreakDate;
@@ -47,13 +50,34 @@ function Index() {
         timerElement.innerHTML = formatTime(countDate); //formatTimer(time)
         console.log("worked out");
     }); //new Date(defaultTime).getTime();
+*/
+    //const defaultTime = "00:00:03";//formatTime(countDate);//"00:00:03";
+    const [timer, setTimer] = useState("00:00:03");
+    const [isLoop, setIsLoop] = useState(false);
+    const [currentMode, setCurrentMode] = useState("Study Time");
 
-    const defaultTime = "00:00:03";//formatTime(countDate);//"00:00:03";
+    useEffect(() => {
+        const handleTimerUpdate = (message) => {
+          console.log("Received message: ", message); // Debugging message
+          if (message.event === "timerUpdate") {
+            console.log("Updating timer with time:", message.time); // Debugging state update
+            setTimer(message.time); // Update timer state
+            setCurrentMode(message.type); // Update mode
+          }
+        };
+    
+        chrome.runtime.onMessage.addListener(handleTimerUpdate);
+    
+        // Cleanup the listener when the component unmounts
+        return () => {
+          chrome.runtime.onMessage.removeListener(handleTimerUpdate);
+        };
+      }, []);
     
     const handleStartClick  = event => {
         chrome.runtime.sendMessage({event: 'start'});
 
-
+       /*
         if(isOnClick || isOnBreakClick) return;
         else{
             if(isOnClick == false) {
@@ -62,12 +86,12 @@ function Index() {
                 
                 updateStudy();   
             }
-        }
+        }*/
         
 
         //event.currentTarget.disabled = false;
     };
-
+/*
     function updateStudy(){
         //let hrs, mins, secs;
         if(isOnClick == false) {
@@ -147,23 +171,36 @@ function Index() {
         }
 
     }
-
+*/
     const handleLoopClick = event =>{
-        isLoop = !isLoop;
-        console.log(isLoop);
+        //isLoop = !isLoop;
+        //console.log(isLoop);
+        setIsLoop(!isLoop);
+        chrome.runtime.sendMessage({ event: "loop" });
     }
 
     const handleClearClick  = event => {
+        chrome.runtime.sendMessage({ event: "stop" });
         /*if(isOnClick == true) {
             isOnClick = false;
             breakOrStudyButton.innerHTML = breakOrStudy;
         }*/
+       /*
         isOnClick = false;
         isOnBreakClick = false;
         clearInterval(timetext);
         timerElement.innerHTML = formatTime(countDate);
-        breakOrStudyButton.innerHTML = breakOrStudy;
-    };
+        breakOrStudyButton.innerHTML = breakOrStudy; */
+    }; //breakOrStudy
+
+    useEffect(() => {
+        chrome.runtime.onMessage.addListener((message) => {
+            if (message.event === 'play') {
+                //new Audio(message.sfx).play();
+                new Audio(message.sfx).play();
+            }
+        });
+    }, []);
 
     return (
         <div>
@@ -171,10 +208,8 @@ function Index() {
             
 
             <div className="flex column ">
-                <h3 id="BreakOrStudy">{breakOrStudy}</h3>
-                <h1 id="timer">{"Yeah"}</h1>
-                
-                
+                <h3 id="BreakOrStudy">{currentMode}</h3>
+                <h1 id="timer">{timer}</h1>
             </div>
 
             <div className="button-container flex">
