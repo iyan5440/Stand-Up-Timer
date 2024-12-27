@@ -11,6 +11,9 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
   },
+  devServer: {
+    historyApiFallback: true,  // This ensures all routes fallback to index.html
+  },
   module: {
     rules: [{ 
         test: /\.(js|jsx)$/,
@@ -18,7 +21,7 @@ module.exports = {
         use: {
             loader: 'babel-loader',
             options: {
-                presets: ['@babel/preset-env', '@babel/preset-react']
+                presets: ['@babel/preset-env', ['@babel/preset-react', { "runtime": "automatic" }]]
             }
         }
     },
@@ -34,14 +37,10 @@ module.exports = {
     }],
   },
   plugins: [new HtmlWebpackPlugin({
-    template: './src/index.html',
+    template: './public/index.html',
     filename: 'index.html',
   }),
-  new CopyPlugin({
-    patterns: [
-      { from: "public"}
-    ],
-  }),
+  
  ],
 };
 

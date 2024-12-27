@@ -4,8 +4,8 @@ let isOnClick = false;
 let isOnBreakClick = false;
 let isLoop = false;
 let timerInterval;
-let countDate = 3 * 1000; // Default study time (5 seconds)
-let countBreakDate = 3 * 1000; // Default break time (3 seconds)
+let countDate = 3 * 1000; 
+let countBreakDate = 3 * 1000; 
 
 chrome.runtime.onInstalled.addListener(() => {
     console.log("just installed");
@@ -20,14 +20,6 @@ chrome.runtime.onInstalled.addListener(() => {
 
     chrome.storage.local.set({defaultData: defaultData}, function() {
         console.log('Data has been Initalized');
-
-        /* chrome.storage.local.get('defaultData', (result) => {
-            if (result.defaultData) {
-                console.log(result.defaultData);
-            } else {
-                console.log("no data")
-            }
-        }); */
     });
     
 })
@@ -39,7 +31,7 @@ chrome.runtime.onMessage.addListener((data, _, sendResponse) => {
         function tryGetData() {
             chrome.storage.local.get('defaultData', (result) => {
                 if (result.defaultData) {
-                    console.log(result.defaultData.timer);
+                    //console.log(result.defaultData.timer);
                     sendResponse(result.defaultData.timer); // Send the timer value once data is found
                 } else {
                     // If no data, retry after a delay
@@ -81,23 +73,15 @@ chrome.runtime.onMessage.addListener(data => {
 
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
     if (data.event === 'start') {
-
         if(isOnClick || isOnBreakClick) return;
         else{
             if(isOnClick == false) {
                 isOnClick = true;
-                //event.currentTarget.disabled = true;
-                clearInterval(timerInterval);
-                
-                //updateStudy();   
+                clearInterval(timerInterval);  
                 startTimer(countDate, 'Study Time');
             }
         }
 
-        /*if (!isOnClick && !isOnBreakClick) {
-            isOnClick = true;
-            startTimer(countDate, 'study');
-        }*/
     } else if (data.event === 'stop') {
         clearInterval(timerInterval);
         isOnClick = false;
@@ -128,10 +112,7 @@ function startTimer(time, type) {
         console.log(tmpTime);
         if (type === 'Study Time') {
             if (tmpTime == 0) {
-                //tell to play the sfx
                 playSfx();
-                /*if (isLoop) startTimer(countBreakDate, 'break'); 
-                else sendUpdate('Break Time', tmpTime); */
                 sendUpdate('Break Time', 0);
                 
             } 
@@ -149,10 +130,8 @@ function startTimer(time, type) {
         
         else if (type === 'Break Time') {
             if (tmpTime == 0) {
-                //send update to title
-                //tell to play sfx
                 playSfx();
-                sendUpdate('Study Time', 0); // setTimeout(function() {updateStudy()}, 1000);
+                sendUpdate('Study Time', 0);
             } 
 
             else if (tmpTime <= -1000) {
@@ -190,86 +169,3 @@ function formatTime(milliseconds) {
     const secs = String(Math.floor((milliseconds / 1000) % 60)).padStart(2, '0');
     return `${hrs}:${mins}:${secs}`;
 }
-
-/*
-function updateStudy(){
-    //let hrs, mins, secs;
-    if(isOnClick == false) {
-        isOnClick = true;
-    }
-    
-
-    if(isOnClick) {// while loop
-        timerElement.innerHTML = formatTime(countDate); //formatTimer(time)
-        let tmpCountDate = countDate;
-        breakOrStudyButton = document.getElementById("BreakOrStudy");
-        breakOrStudyButton.innerHTML = "Study Time";
-        timetext = setInterval(function () {
-            if(isOnClick){
-                tmpCountDate-=1000;
-                timerElement.innerHTML = formatTime(tmpCountDate);//hrs+":"+mins+":"+secs; //formatTimer(time)
-
-                if(tmpCountDate == 0){ 
-                    breakOrStudyButton.innerHTML = "Break Time";
-                    new Audio(sfx).play();
-                }
-
-                if(tmpCountDate == -1000){
-                    clearInterval(timetext);
-                    isOnClick = false;
-                    tmpCountDate = countDate;
-                    updateBreak();
-                }
-            }
-            
-        },1000);
-        
-    }
-
-}
-
-function updateBreak(){
-    //let hrs, mins, secs;
-    if(isOnBreakClick == false) {
-        isOnBreakClick = true;
-    }
-    
-
-    if(isOnBreakClick) {// while loop
-        timerElement.innerHTML = formatTime(countBreakDate);
-        let tmpCountDate = countBreakDate;
-        breakOrStudyButton = document.getElementById("BreakOrStudy");
-        breakOrStudyButton.innerHTML = "Break Time";
-        timetext = setInterval(function () {
-            if(isOnBreakClick){
-                tmpCountDate-=1000;
-                timerElement.innerHTML = formatTime(tmpCountDate)//hrs+":"+mins+":"+secs;
-
-                if(tmpCountDate == 0){ 
-                    //clearInterval(timetext);
-                    //isOnBreakClick = false;
-                    breakOrStudyButton.innerHTML = "Study Time";
-                    new Audio(sfx).play();
-                    
-                }
-
-                if(tmpCountDate == 0){
-                    clearInterval(timetext);
-                    if(isOnBreakClick == true){
-                        isOnBreakClick = false;
-                        if(isLoop){
-                            setTimeout(function() {updateStudy()}, 1000);
-                            
-                        }
-                    }
-                }
-
-            }
-            
-        },1000);
-        
-    }
-
-}
-
-*/
