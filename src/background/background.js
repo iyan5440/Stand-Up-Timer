@@ -3,73 +3,26 @@ import sfx from "./alarmsfx.mp3";
 let isOnClick = false;
 let isOnBreakClick = false;
 let isLoop = false;
+//let pingSfx = new Audio(sfx);
+let volume;
 let timerInterval;
-let countDate = 3 * 1000; 
-let countBreakDate = 3 * 1000; 
+let countDate; 
+let countBreakDate; 
+//let audioObject;
 
 chrome.runtime.onInstalled.addListener(() => {
     console.log("just installed");
-
-    const defaultData = {
-        timer: 3 * 1000,  // default timer - 3 seconds
-    };
-      
-    const userData = {
-        timer: 0  // user custom timer
-    };
-
-    chrome.storage.local.set({defaultData: defaultData}, function() {
-        console.log('Data has been Initalized');
-    });
     
+    const defaultdata = {
+        timer: 1 * 10 * 1000,//3 * 1000, //30 * 60 * 1000,  // default timer - 3 seconds
+        breakTimer: 30 * 1000,
+        defaultVolume: 0.5
+    }; 
+
+    countDate = defaultdata.timer;
+    countBreakDate = defaultdata.breakTimer;
+    volume = defaultdata.defaultVolume;
 })
-
-chrome.runtime.onMessage.addListener((data, _, sendResponse) => {
-    if (data.event === 'default') {
-        const retryDelay = 500; // Delay between retries (in milliseconds)
-        
-        function tryGetData() {
-            chrome.storage.local.get('defaultData', (result) => {
-                if (result.defaultData) {
-                    //console.log(result.defaultData.timer);
-                    sendResponse(result.defaultData.timer); // Send the timer value once data is found
-                } else {
-                    // If no data, retry after a delay
-                    setTimeout(tryGetData, retryDelay);
-                }
-            });
-        }
-
-        tryGetData(); // Initiate the first attempt
-        
-        // Return true to indicate that the response will be sent asynchronously
-        return true;
-    }
-});
-
-/*
-
-chrome.runtime.onMessage.addListener(data => {
-    if(data.event === 'start') {
-        //console.log("yes - comms are working");
-        if(isOnClick || isOnBreakClick) return;
-        else{
-            if(isOnClick == false) {
-                isOnClick = true;
-                //event.currentTarget.disabled = true;
-                
-                updateStudy();   
-            }
-        }
-
-        
-    }
-
-})
-*/
-
-
-
 
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
     if (data.event === 'start') {
@@ -86,6 +39,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
         clearInterval(timerInterval);
         isOnClick = false;
         isOnBreakClick = false;
+        //if in blur do not send update
         sendUpdate('Study Time', countDate);
     } else if (data.event === 'loop') {
         isLoop = !isLoop;
@@ -147,6 +101,7 @@ function startTimer(time, type) {
     }, intervalTime);
 }
 
+
 function sendUpdate(type, time) {
     console.log(`Sending ${type} update: ${formatTime(time)}`);
     chrome.runtime.sendMessage({
@@ -160,7 +115,9 @@ function playSfx() {
     chrome.runtime.sendMessage({
         event: 'play',
         sfx: sfx,
+        volume: volume,
     });
+
 }
 
 function formatTime(milliseconds) {

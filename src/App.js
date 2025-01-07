@@ -12,7 +12,7 @@ export function App() {
         timerElement = document.getElementById("timer");
     });
 
-    const [timer, setTimer] = useState("00:00:03");
+    const [timer, setTimer] = useState("00:00:10"); //useState("00:00:03");
     const [isLoop, setIsLoop] = useState(false);
     const [currentMode, setCurrentMode] = useState("Study Time");
     const navigate = useNavigate();
@@ -35,8 +35,10 @@ export function App() {
     
         // Cleanup the listener when the component unmounts
         return () => {
-          chrome.runtime.onMessage.removeListener(handleTimerUpdate);
+            chrome.runtime.onMessage.removeListener(handleTimerUpdate);
         };
+        
+        
       }, []);
     
     const handleStartClick  = event => {
@@ -51,11 +53,17 @@ export function App() {
     const handleClearClick  = event => {
         chrome.runtime.sendMessage({ event: "stop" });
     };
-
+    
     useEffect(() => {
         chrome.runtime.onMessage.addListener((message) => {
             if (message.event === 'play') {
-                new Audio(message.sfx).play();
+                //chrome.action.openPopup();
+                const audioObject = new Audio(message.sfx);
+                console.log("Changing Volume to: " + message.volume);
+                audioObject.volume = message.volume;
+                audioObject.play();
+
+                //message.audioObject.play();
             }
         });
     }, []);
